@@ -12,10 +12,7 @@ def Upload(body, host, headers={}):
     print(res.getheaders())
     print(res.getheader('X-Server2Client', 'Fallback'))
     print('Uploaded to', host, 'with status', res.status)
-    motor_result=res.read()
-    #read from processed image
-
-    #json(string)-->dictionary    
+    motor_result=res.read()    
     return motor_result
 
 def Download():
@@ -34,7 +31,6 @@ def DownloadAndUpload():
 
 
 def UploadNumpy(host, port, image):
-    #image = 255 * np.random.random((100, 100, 3))
     #print('shape', image.shape)
     result, encoded_image = cv2.imencode('.jpg', image,
                                [int(cv2.IMWRITE_JPEG_QUALITY), 90])

@@ -71,20 +71,5 @@ def main():
 			print(error)
 			sleep(1)
 			continue
-'''
-        chunk = chunk[:-1].decode()
-        data = json.loads(chunk)
-        # print(Time(), data)
-        action = data['action']
-        print('action', action)
-        motor(MOTOR_SPEEDS[action][0],MOTOR_SPEEDS[action][1])
-
-        try:
-            print(MOTOR_SPEEDS[action])
-            print(MOTOR_SPEEDS[action][0])
-        except KeyError as error:
-            print(error)
-'''
 
 main()
-
