@@ -10,10 +10,11 @@ from sys import argv
 from ImageRW import UploadNumpy
 from Camera import Camera_calibrated
 
-def motor(left, right):
+def drive(left, right):
 	left = np.clip(left, -100 , 100)
 	right = np.clip(right, -100, 100)
-	print(left,right)
+	print('left: ',left)
+	print('right: ',right)
 
 	if left > 0:
 		left_f = left
@@ -28,7 +29,7 @@ def motor(left, right):
 	else:
 		right_f = 0
 		right_b = -right
-	print(left_f, left_b, right_f, right_b)
+	#print(left_f, left_b, right_f, right_b)
 	time.sleep(0.00001)
 	p1A.ChangeDutyCycle(left_f)
 	p1B.ChangeDutyCycle(left_b)
@@ -62,8 +63,10 @@ def main():
 		try:
 			image=Camera_calibrated()
 			motor_result = UploadNumpy(argv[1], PORT, image)
-			print(motor_result)
-			print(type(motor_result))
+			left=motor_result[0]
+			right=motor_result[1]
+			#print(type(motor_result))
+			drive(left,right)
 		except ConnectionRefusedError as error:
 			print(error)
 			sleep(1)
