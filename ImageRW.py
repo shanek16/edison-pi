@@ -12,7 +12,8 @@ def Upload(body, host, headers={}):
     print(res.getheaders())
     print(res.getheader('X-Server2Client', 'Fallback'))
     print('Uploaded to', host, 'with status', res.status)
-    motor_result=res.read()    
+    motor_result=res.read()
+  
     return motor_result
 
 def Download():

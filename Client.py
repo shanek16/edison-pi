@@ -13,8 +13,6 @@ from Camera import Camera_calibrated
 def drive(left, right):
 	left = np.clip(left, -100 , 100)
 	right = np.clip(right, -100, 100)
-	print('left: ',left)
-	print('right: ',right)
 
 	if left > 0:
 		left_f = left
@@ -63,8 +61,16 @@ def main():
 		try:
 			image=Camera_calibrated()
 			motor_result = UploadNumpy(argv[1], PORT, image)
-			left=motor_result[0]
-			right=motor_result[1]
+			# print('\n\n',motor_result,'\n\n')
+			# print('type: ',type(motor_result))
+			data = json.loads(motor_result)
+			left=data['left']
+			right=data['right']
+			print('data[left]: ',left)
+			print('data[right]: ',right)
+			print('type: ',type(left))
+			# left=motor_result[action][0]
+			# right=motor_result[action][1]
 			#print(type(motor_result))
 			drive(left,right)
 		except ConnectionRefusedError as error:
