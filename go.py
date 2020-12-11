@@ -98,7 +98,7 @@ if __name__ == '__main__':
 		undistorted_img = cv2.remap(image, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 		pi_image=select_white(undistorted_img,white)
 
-		result,mode=decision(pi_image,undistorted_img)
+		result,second=decision(pi_image,undistorted_img)
 		cv2.putText(undistorted_img,'({0},{1})'.format(int(result[0]),int(result[1])),(190,30),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
 		cv2.imshow('image',undistorted_img)
 		cv2.imshow('pi_image',pi_image)
@@ -117,10 +117,9 @@ if __name__ == '__main__':
 		######################################################
 		rawCapture.truncate(0)
 		drive(result[0],result[1])
-		if mode>2:
-			print('motor stopped')
-			time.sleep(5)
-			mode=0
+		if second >0:
+			print('sleeping for {} seconds..'.format(second))
+			time.sleep(second)
 
 		key=cv2.waitKey(1)
 		if key == ord('q'):  
