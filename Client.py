@@ -80,7 +80,7 @@ def main():
 	global tb
 	for frame in camera.capture_continuous(rawCapture,format='bgr',use_video_port=True):
 		try:
-			print('frame rate: ',frame_rate)
+			print('camera.framerate: ',camera.framerate)
 			image = frame.array
 			undistorted_img = cv2.remap(image, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 			rawCapture.truncate(0)
