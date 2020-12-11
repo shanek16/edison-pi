@@ -8,10 +8,18 @@ import cv2
 import time
 #from Time import Time
 from sys import argv
+import argparse
 from ImageRW import UploadNumpy
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 #from Camera import Camera_calibrated
+
+parser=argparse.ArgumentParser()
+parser.add_argument('--frame', type=int, required=False, default=30)
+parser.add_argument('--ip', type=str, required=False, default='192.168.0.6')
+args=parser.parse_args()
+frame_rate=args.frame
+ip_address=args.ip
 
 def drive(left, right):
 	left = np.clip(left, -100 , 100)
@@ -61,25 +69,27 @@ camera=PiCamera()
 camera.resolution=(320,240)
 camera.vflip=True
 camera.hflip=True
-camera.framerate=30#20
+camera.framerate=frame_rate
 rawCapture=PiRGBArray(camera,size=(320,240))
 map1=np.load('map1.npy')
 map2=np.load('map2.npy')
 
 print(argv)
-# tb=0
+tb=0
 def main():
-	# global tb
+	global tb
 	for frame in camera.capture_continuous(rawCapture,format='bgr',use_video_port=True):
 		try:
+			print('frame rate: ',frame_rate)
 			image = frame.array
 			undistorted_img = cv2.remap(image, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 			rawCapture.truncate(0)
 			# image=Camera_calibrated()
-			# te=time.time()-tb
-			# print('time elapsed: ',te)
-			# tb=time.time()
-			motor_result = UploadNumpy(argv[1], PORT, undistorted_img)
+			te=time.time()-tb
+			print('time elapsed: ',te)
+			tb=time.time()
+			motor_result = UploadNumpy(ip_address, PORT, undistorted_img)
+			# motor_result = UploadNumpy(argv[1], PORT, undistorted_img)
 			data = json.loads(motor_result)
 			left=data['left']
 			right=data['right']
