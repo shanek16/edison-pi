@@ -7,7 +7,14 @@ import time
 from datetime import datetime
 import os
 from decision import decision
+import argparse
 #import linecache#?
+
+#input white: default 150
+parser=argparse.ArgumentParser()
+parser.add_argument('--white', type=int, required=False, default=150)
+args=parser.parse_args()
+white=args.white
 
 #image saving directory
 directory='./images/image_'+datetime.now().strftime('%y%b%d%H%M%S')
@@ -55,8 +62,8 @@ p2A.start(0)
 p2B.start(0)
 
 result=(0,0)
-pre_result=(0,0)
-
+#pre_result=(0,0)
+# tb=0
 def drive(left, right):
 	left = np.clip(left, -100 , 100)
 	right = np.clip(right, -100, 100)
@@ -85,8 +92,11 @@ def drive(left, right):
 if __name__ == '__main__':
 	for frame in camera.capture_continuous(rawCapture,format='bgr',use_video_port=True): 
 		image=frame.array
+		# te=time.time()-tb
+		# print('time elapsed: ',te)
+		# tb=time.time()
 		undistorted_img = cv2.remap(image, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
-		pi_image=select_white(undistorted_img,150)
+		pi_image=select_white(undistorted_img,white)
 
 		result,mode=decision(pi_image,undistorted_img)
 		cv2.putText(undistorted_img,'({0},{1})'.format(int(result[0]),int(result[1])),(190,30),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)

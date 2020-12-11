@@ -55,23 +55,21 @@ p2A.start(0)
 p2B.start(0)
 
 print(argv)
-
+tb=0
 def main():
+	global tb
 	while True:
 		try:
 			image=Camera_calibrated()
+			te=time.time()-tb
+			print('time elapsed: ',te)
+			tb=time.time()
 			motor_result = UploadNumpy(argv[1], PORT, image)
-			# print('\n\n',motor_result,'\n\n')
-			# print('type: ',type(motor_result))
 			data = json.loads(motor_result)
 			left=data['left']
 			right=data['right']
 			print('data[left]: ',left)
 			print('data[right]: ',right)
-			print('type: ',type(left))
-			# left=motor_result[action][0]
-			# right=motor_result[action][1]
-			#print(type(motor_result))
 			drive(left,right)
 		except ConnectionRefusedError as error:
 			print(error)
