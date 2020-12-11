@@ -65,6 +65,35 @@ p1B.start(0)
 p2A.start(0)
 p2B.start(0)
 
+GPIO_TRIGGER = 10
+GPIO_ECHO    = 12
+ 
+GPIO.setup(GPIO_TRIGGER,GPIO.OUT)
+GPIO.setup(GPIO_ECHO,GPIO.IN)
+GPIO.output(GPIO_TRIGGER, False)
+
+def measure():
+    GPIO.output(GPIO_TRIGGER, True)
+    #time.sleep(0.00001)
+    GPIO.output(GPIO_TRIGGER, False)
+    start = time.time()
+    timeOut = start
+
+    while GPIO.input(GPIO_ECHO)==0:
+        start = time.time()
+        if time.time()-timeOut > 0.05:
+            return 100
+
+    while GPIO.input(GPIO_ECHO)==1:
+        if time.time()-start > 0.05:
+            return 100
+        stop = time.time()
+
+    elapsed = stop-start
+    distance = (elapsed * 34300)/2
+    print('distance: ',distance)
+    return distance
+
 camera=PiCamera()
 camera.resolution=(320,240)
 camera.vflip=True
@@ -93,8 +122,12 @@ def main():
 			data = json.loads(motor_result)
 			left=data['left']
 			right=data['right']
-			print('data[left]: ',left)
-			print('data[right]: ',right)
+
+			distance=measure()
+			if distance<20:
+				left=0
+				right=0
+				
 			drive(left,right)
 		except ConnectionRefusedError as error:
 			print(error)
