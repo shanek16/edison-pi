@@ -116,7 +116,6 @@ if __name__ == '__main__':
 		cv2.imwrite(pi_path,pi_image)
 		######################################################
 		rawCapture.truncate(0)
-
 		drive(result[0],result[1])
 		if mode>2:
 			print('motor stopped')
