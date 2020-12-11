@@ -6,20 +6,59 @@ from time import sleep
 import numpy as np
 import cv2
 import time
-#from Time import Time
-from sys import argv
+import sys
+#from sys import argv
 import argparse
 from ImageRW import UploadNumpy
 from picamera import PiCamera
 from picamera.array import PiRGBArray
-#from Camera import Camera_calibrated
 
+#region: argument parsing
 parser=argparse.ArgumentParser()
 parser.add_argument('--frame', type=int, required=False, default=30)
 parser.add_argument('--ip', type=str, required=False, default='192.168.0.6')
 args=parser.parse_args()
 frame_rate=args.frame
 ip_address=args.ip
+#endregion
+
+#region: gpio pin setting
+motor1A = 16
+motor1B = 18
+motor2A = 24
+motor2B = 22
+GPIO_TRIGGER = 10
+GPIO_ECHO    = 12
+
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(motor1A,GPIO.OUT)
+GPIO.setup(motor1B,GPIO.OUT)
+GPIO.setup(motor2A,GPIO.OUT)
+GPIO.setup(motor2B,GPIO.OUT)
+GPIO.setup(GPIO_TRIGGER,GPIO.OUT)
+GPIO.setup(GPIO_ECHO,GPIO.IN)
+
+GPIO.output(GPIO_TRIGGER, False)
+p1A = GPIO.PWM(motor1A, 500)
+p1B = GPIO.PWM(motor1B, 500)
+p2A = GPIO.PWM(motor2A, 500)
+p2B = GPIO.PWM(motor2B, 500)
+p1A.start(0)
+p1B.start(0)
+p2A.start(0)
+p2B.start(0)
+#endregion
+
+#region: camera setting
+map1=np.load('map1.npy')
+map2=np.load('map2.npy')
+camera=PiCamera()
+camera.resolution=(320,240)
+camera.vflip=True
+camera.hflip=True
+camera.framerate=frame_rate
+rawCapture=PiRGBArray(camera,size=(320,240))
+#endregion
 
 def drive(left, right):
 	left = np.clip(left, -100 , 100)
@@ -38,39 +77,11 @@ def drive(left, right):
 	else:
 		right_f = 0
 		right_b = -right
-	#print(left_f, left_b, right_f, right_b)
-	time.sleep(0.00001)
+	#time.sleep(0.00001)
 	p1A.ChangeDutyCycle(left_f)
 	p1B.ChangeDutyCycle(left_b)
 	p2A.ChangeDutyCycle(right_f)
 	p2B.ChangeDutyCycle(right_b)
-
-# gpio pin setting
-motor1A = 16
-motor1B = 18
-motor2A = 24
-motor2B = 22
-
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(motor1A,GPIO.OUT)
-GPIO.setup(motor1B,GPIO.OUT)
-GPIO.setup(motor2A,GPIO.OUT)
-GPIO.setup(motor2B,GPIO.OUT)
-p1A = GPIO.PWM(motor1A, 500)
-p1B = GPIO.PWM(motor1B, 500)
-p2A = GPIO.PWM(motor2A, 500)
-p2B = GPIO.PWM(motor2B, 500)
-p1A.start(0)
-p1B.start(0)
-p2A.start(0)
-p2B.start(0)
-
-GPIO_TRIGGER = 10
-GPIO_ECHO    = 12
- 
-GPIO.setup(GPIO_TRIGGER,GPIO.OUT)
-GPIO.setup(GPIO_ECHO,GPIO.IN)
-GPIO.output(GPIO_TRIGGER, False)
 
 def measure():
     GPIO.output(GPIO_TRIGGER, True)
@@ -94,26 +105,15 @@ def measure():
     print('distance: ',distance)
     return distance
 
-camera=PiCamera()
-camera.resolution=(320,240)
-camera.vflip=True
-camera.hflip=True
-camera.framerate=frame_rate
-rawCapture=PiRGBArray(camera,size=(320,240))
-map1=np.load('map1.npy')
-map2=np.load('map2.npy')
-
-print(argv)
 tb=0
 def main():
 	global tb
 	for frame in camera.capture_continuous(rawCapture,format='bgr',use_video_port=True):
 		try:
-			print('camera.framerate: ',camera.framerate)
+			# print('camera.framerate: ',camera.framerate)
 			image = frame.array
 			undistorted_img = cv2.remap(image, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 			rawCapture.truncate(0)
-			# image=Camera_calibrated()
 			te=time.time()-tb
 			print('time elapsed: ',te)
 			tb=time.time()
@@ -122,16 +122,23 @@ def main():
 			data = json.loads(motor_result)
 			left=data['left']
 			right=data['right']
+			second=data['second']
 
 			distance=measure()
 			if distance<20:
 				left=0
 				right=0
-				
+
 			drive(left,right)
+			if second >0:
+				print('sleeping for {} seconds..'.format(second))
+				time.sleep(second)
 		except ConnectionRefusedError as error:
 			print(error)
 			sleep(1)
 			continue
+		except KeyboardInterrupt:
+			GPIO.cleanup()
+			sys.exit()	
 
 main()
