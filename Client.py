@@ -4,11 +4,14 @@ from http.client import HTTPConnection
 import json
 from time import sleep
 import numpy as np
+import cv2
 import time
 #from Time import Time
 from sys import argv
 from ImageRW import UploadNumpy
-from Camera import Camera_calibrated
+from picamera import PiCamera
+from picamera.array import PiRGBArray
+#from Camera import Camera_calibrated
 
 def drive(left, right):
 	left = np.clip(left, -100 , 100)
@@ -54,17 +57,29 @@ p1B.start(0)
 p2A.start(0)
 p2B.start(0)
 
+camera=PiCamera()
+camera.resolution=(320,240)
+camera.vflip=True
+camera.hflip=True
+camera.framerate=30#20
+rawCapture=PiRGBArray(camera,size=(320,240))
+map1=np.load('map1.npy')
+map2=np.load('map2.npy')
+
 print(argv)
-tb=0
+# tb=0
 def main():
-	global tb
-	while True:
+	# global tb
+	for frame in camera.capture_continuous(rawCapture,format='bgr',use_video_port=True):
 		try:
-			image=Camera_calibrated()
-			te=time.time()-tb
-			print('time elapsed: ',te)
-			tb=time.time()
-			motor_result = UploadNumpy(argv[1], PORT, image)
+			image = frame.array
+			undistorted_img = cv2.remap(image, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
+			rawCapture.truncate(0)
+			# image=Camera_calibrated()
+			# te=time.time()-tb
+			# print('time elapsed: ',te)
+			# tb=time.time()
+			motor_result = UploadNumpy(argv[1], PORT, undistorted_img)
 			data = json.loads(motor_result)
 			left=data['left']
 			right=data['right']
