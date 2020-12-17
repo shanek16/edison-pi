@@ -63,21 +63,29 @@ rawCapture=PiRGBArray(camera,size=(320,240))
 def drive(left, right):
 	left = np.clip(left, -100 , 100)
 	right = np.clip(right, -100, 100)
+	print(left,right)
 
 	if left > 0:
-		left_f = left
+		left_f = np.clip(left,30,100)
+		left_b = 0
+	elif left ==0:
+		left_f = 0
 		left_b = 0
 	else:
 		left_f = 0
-		left_b = -left
+		left_b = -np.clip(left,-100,-30)
 		
 	if right > 0:
-		right_f = right
+		right_f = np.clip(right,30,100)
+		right_b = 0
+	elif right ==0:
+		right_f = 0
 		right_b = 0
 	else:
 		right_f = 0
-		right_b = -right
-	#time.sleep(0.00001)
+		right_b = -np.clip(right,-100,-30)
+	print(left_f, left_b, right_f, right_b)
+	time.sleep(0.00001)
 	p1A.ChangeDutyCycle(left_f)
 	p1B.ChangeDutyCycle(left_b)
 	p2A.ChangeDutyCycle(right_f)
