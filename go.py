@@ -20,7 +20,7 @@ white=args.white
 directory='./images/image_'+datetime.now().strftime('%y%b%d%H%M%S')
 pi_directory='./images/pi_image_'+datetime.now().strftime('%y%b%d%H%M%S')
 
-###############camera setting#####################
+#region camera setting
 camera=PiCamera()
 camera.resolution=(320,240)
 camera.vflip=True
@@ -31,6 +31,7 @@ map1=np.load('map1.npy')
 map2=np.load('map2.npy')
 image_num=0 
 #time.sleep(.1)
+#endregion
 
 def select_white(image, white):
     lower = np.uint8([white,white,white])
@@ -38,15 +39,13 @@ def select_white(image, white):
     white_mask = cv2.inRange(image, lower, upper)#lower~upper preserve, others->0(black)
     return white_mask
 
-###################### motor setting ################
+#region motor setting
 motor1A = 16
 motor1B = 18
 motor2A = 24
 motor2B = 22
 
 chlist=(motor1A,motor1B,motor2A,motor2B)
-# GPIO.setwarnings(False)
-
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(motor1A,GPIO.OUT)
 GPIO.setup(motor1B,GPIO.OUT)
@@ -60,10 +59,10 @@ p1A.start(0)
 p1B.start(0)
 p2A.start(0)
 p2B.start(0)
-
 result=(0,0)
 #pre_result=(0,0)
-# tb=0
+#endregion
+
 def drive(left, right):
 	left = np.clip(left, -100 , 100)
 	right = np.clip(right, -100, 100)
@@ -88,10 +87,11 @@ def drive(left, right):
 	p1B.ChangeDutyCycle(left_b)
 	p2A.ChangeDutyCycle(right_f)
 	p2B.ChangeDutyCycle(right_b)
-
+# tb=0
 if __name__ == '__main__':
 	for frame in camera.capture_continuous(rawCapture,format='bgr',use_video_port=True): 
 		image=frame.array
+		rawCapture.truncate(0)
 		# te=time.time()-tb
 		# print('time elapsed: ',te)
 		# tb=time.time()
@@ -102,8 +102,8 @@ if __name__ == '__main__':
 		cv2.putText(undistorted_img,'({0},{1})'.format(int(result[0]),int(result[1])),(190,30),cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2)
 		cv2.imshow('image',undistorted_img)
 		cv2.imshow('pi_image',pi_image)
-		#####################image save#########################
-		image_name='image_'+"{0:0=2d}".format(image_num)+'.png'
+		#region image save
+		'''image_name='image_'+"{0:0=2d}".format(image_num)+'.png'
 		image_num+=1
 		try:
 			os.makedirs(directory)
@@ -113,9 +113,9 @@ if __name__ == '__main__':
 		path=os.path.join(directory, image_name)
 		pi_path=os.path.join(pi_directory, image_name)
 		cv2.imwrite(path,undistorted_img)
-		cv2.imwrite(pi_path,pi_image)
-		######################################################
-		rawCapture.truncate(0)
+		cv2.imwrite(pi_path,pi_image)'''
+		#endregion
+		
 		drive(result[0],result[1])
 		if second >0:
 			print('sleeping for {} seconds..'.format(second))
