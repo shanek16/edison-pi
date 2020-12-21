@@ -113,7 +113,7 @@ def measure():
     print('distance: ',distance)
     return distance
 
-tb=0
+# tb=0
 def main():
 	global tb
 	for frame in camera.capture_continuous(rawCapture,format='bgr',use_video_port=True):
@@ -122,9 +122,9 @@ def main():
 			image = frame.array
 			undistorted_img = cv2.remap(image, map1, map2, interpolation=cv2.INTER_LINEAR, borderMode=cv2.BORDER_CONSTANT)
 			rawCapture.truncate(0)
-			te=time.time()-tb
-			print('time elapsed: ',te)
-			tb=time.time()
+			# te=time.time()-tb
+			# print('time elapsed: ',te)
+			# tb=time.time()
 			motor_result = UploadNumpy(ip_address, PORT, undistorted_img)
 			# motor_result = UploadNumpy(argv[1], PORT, undistorted_img)
 			data = json.loads(motor_result)
