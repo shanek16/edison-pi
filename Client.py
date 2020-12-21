@@ -60,6 +60,9 @@ camera.framerate=frame_rate
 rawCapture=PiRGBArray(camera,size=(320,240))
 #endregion
 
+host=ip_address
+host += ":" + str(PORT)
+
 def drive(left, right):
 	left = np.clip(left, -100 , 100)
 	right = np.clip(right, -100, 100)
@@ -125,7 +128,7 @@ def main():
 			# te=time.time()-tb
 			# print('time elapsed: ',te)
 			# tb=time.time()
-			motor_result = UploadNumpy(ip_address, PORT, undistorted_img)
+			motor_result = UploadNumpy(host, undistorted_img)
 			# motor_result = UploadNumpy(argv[1], PORT, undistorted_img)
 			data = json.loads(motor_result)
 			left=data['left']

@@ -31,13 +31,14 @@ def DownloadAndUpload():
         Upload(File.read())
 
 
-def UploadNumpy(host, port, image):
+def UploadNumpy(host, image):
     #print('shape', image.shape)
     result, encoded_image = cv2.imencode('.jpg', image,
                                [int(cv2.IMWRITE_JPEG_QUALITY), 90])
+    #type(encoded_imaage)=numpy.ndarray                    
+    #print('\n\n\ntype of encoded_image={}'.format(type(encoded_image)))
     if not result:
         raise Exception('Image encode error')
-    host += ":" + str(port)
     motor_result=Upload(encoded_image.tobytes(), host, {"X-Client2Server": "123"})
     return motor_result
 
