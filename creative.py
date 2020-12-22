@@ -142,8 +142,7 @@ def main():
 			mode=data['mode']
 
 			distance=int(measure())
-			if distance<20:
-			# if distance<10:#creative mode
+			if distance<10:#creative mode
 				left=0
 				right=0
 
