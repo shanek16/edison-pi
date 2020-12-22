@@ -116,10 +116,11 @@ def measure():
     distance = (elapsed * 34300)/2
     print('distance: ',distance)
     return distance
-
+mode=0
 # tb=0
 def main():
-	global tb
+	# global tb
+	global mode
 	for frame in camera.capture_continuous(rawCapture,format='bgr',use_video_port=True):
 		try:
 			# print('camera.framerate: ',camera.framerate)
@@ -129,12 +130,14 @@ def main():
 			# te=time.time()-tb
 			# print('time elapsed: ',te)
 			# tb=time.time()
+			print('\nbefore sending mode={}'.format(mode))
 			motor_result = UploadNumpy(host, undistorted_img)
 			# motor_result = UploadNumpy(argv[1], PORT, undistorted_img)
 			data = json.loads(motor_result)
 			left=data['left']
 			right=data['right']
 			second=data['second']
+			mode=data['mode']
 
 			distance=measure()
 			if distance<20:
@@ -145,9 +148,10 @@ def main():
 			if second >0:
 				print('sleeping for {} seconds..'.format(second))
 				time.sleep(second)
-			'''if second==3:# if stopped
+			print('\n\n\nmode={}'.format(mode))
+			if mode>3:
 				mode=0
-				mode_Upload(mode, host, {"X-Client2Server": "123"})#tell Server to make mode=0'''
+			# mode_Upload(mode, host, {"X-Client2Server": "123"})#tell Server to make mode=0'''
 		except ConnectionRefusedError as error:
 			print(error)
 			sleep(1)
