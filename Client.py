@@ -152,7 +152,7 @@ def main():
 				print('sleeping for {} seconds..'.format(second))
 				time.sleep(second)
 			print('\n\n\nclient_mode={}'.format(mode))
-			if mode>8:
+			if mode>6:
 				mode=0
 			# mode_Upload(mode, host, {"X-Client2Server": "123"})#tell Server to make mode=0'''
 		except ConnectionRefusedError as error:
