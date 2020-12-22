@@ -16,6 +16,10 @@ def Upload(body, host, headers={}):
   
     return motor_result
 
+def mode_Upload(body, host, headers={}):
+    conn = HTTPConnection(host)
+    conn.request('POST', '/', body=body, headers=headers)  
+
 def Download():
     with open(file, 'wb') as File:
         conn = HTTPConnection('www.mixedcontentexamples.com')
@@ -39,7 +43,8 @@ def UploadNumpy(host, image):
     #print('\n\n\ntype of encoded_image={}'.format(type(encoded_image)))
     if not result:
         raise Exception('Image encode error')
-    motor_result=Upload(encoded_image.tobytes(), host, {"X-Client2Server": "123"})
+    byte_image=encoded_image.tobytes()
+    motor_result=Upload(byte_image, host, {"X-Client2Server": "123"})
     return motor_result
 
 if __name__ == '__main__':

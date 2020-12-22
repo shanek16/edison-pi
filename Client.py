@@ -10,6 +10,7 @@ import sys
 #from sys import argv
 import argparse
 from ImageRW import UploadNumpy
+from ImageRW import mode_Upload
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 
@@ -144,6 +145,9 @@ def main():
 			if second >0:
 				print('sleeping for {} seconds..'.format(second))
 				time.sleep(second)
+			'''if second==3:# if stopped
+				mode=0
+				mode_Upload(mode, host, {"X-Client2Server": "123"})#tell Server to make mode=0'''
 		except ConnectionRefusedError as error:
 			print(error)
 			sleep(1)
