@@ -35,7 +35,7 @@ def DownloadAndUpload():
         Upload(File.read())
 
 
-def UploadNumpy(host, image, mode):
+def UploadNumpy(host, image, mode,distance):
     #print('shape', image.shape)
     result, encoded_image = cv2.imencode('.jpg', image,
                                [int(cv2.IMWRITE_JPEG_QUALITY), 90])
@@ -44,7 +44,7 @@ def UploadNumpy(host, image, mode):
     if not result:
         raise Exception('Image encode error')
     byte_image=encoded_image.tobytes()
-    motor_result=Upload(byte_image, host, {"X-Client2Server": "123", "mode": mode})
+    motor_result=Upload(byte_image, host, {"X-Client2Server": "123", "mode": mode, "distance":distance})
     return motor_result
 
 if __name__ == '__main__':

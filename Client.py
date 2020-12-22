@@ -117,10 +117,12 @@ def measure():
     print('distance: ',distance)
     return distance
 mode=0
+distance=50
 # tb=0
 def main():
 	# global tb
 	global mode
+	global distance
 	for frame in camera.capture_continuous(rawCapture,format='bgr',use_video_port=True):
 		try:
 			# print('camera.framerate: ',camera.framerate)
@@ -131,7 +133,7 @@ def main():
 			# print('time elapsed: ',te)
 			# tb=time.time()
 			print('\nbefore sending mode={}'.format(mode))
-			motor_result = UploadNumpy(host, undistorted_img,mode)
+			motor_result = UploadNumpy(host, undistorted_img,mode,distance)
 			# motor_result = UploadNumpy(argv[1], PORT, undistorted_img)
 			data = json.loads(motor_result)
 			left=data['left']
@@ -139,7 +141,7 @@ def main():
 			second=data['second']
 			mode=data['mode']
 
-			distance=measure()
+			distance=int(measure())
 			if distance<20:
 				left=0
 				right=0
