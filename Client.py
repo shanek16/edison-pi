@@ -131,7 +131,7 @@ def main():
 			# print('time elapsed: ',te)
 			# tb=time.time()
 			print('\nbefore sending mode={}'.format(mode))
-			motor_result = UploadNumpy(host, undistorted_img)
+			motor_result = UploadNumpy(host, undistorted_img,mode)
 			# motor_result = UploadNumpy(argv[1], PORT, undistorted_img)
 			data = json.loads(motor_result)
 			left=data['left']
@@ -145,11 +145,12 @@ def main():
 				right=0
 
 			drive(left,right)
+			print('second={}'.format(second))
 			if second >0:
 				print('sleeping for {} seconds..'.format(second))
 				time.sleep(second)
-			print('\n\n\nmode={}'.format(mode))
-			if mode>3:
+			print('\n\n\nclient_mode={}'.format(mode))
+			if mode>10:
 				mode=0
 			# mode_Upload(mode, host, {"X-Client2Server": "123"})#tell Server to make mode=0'''
 		except ConnectionRefusedError as error:
