@@ -16,10 +16,6 @@ def Upload(body, host, headers={}):
   
     return motor_result
 
-def mode_Upload(body, host, headers={}):
-    conn = HTTPConnection(host)
-    conn.request('POST', '/', body=body, headers=headers)  
-
 def Download():
     with open(file, 'wb') as File:
         conn = HTTPConnection('www.mixedcontentexamples.com')
@@ -36,11 +32,8 @@ def DownloadAndUpload():
 
 
 def UploadNumpy(host, image, mode,distance):
-    #print('shape', image.shape)
     result, encoded_image = cv2.imencode('.jpg', image,
                                [int(cv2.IMWRITE_JPEG_QUALITY), 90])
-    #type(encoded_imaage)=numpy.ndarray                    
-    #print('\n\n\ntype of encoded_image={}'.format(type(encoded_image)))
     if not result:
         raise Exception('Image encode error')
     byte_image=encoded_image.tobytes()

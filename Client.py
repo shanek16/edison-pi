@@ -7,10 +7,8 @@ import numpy as np
 import cv2
 import time
 import sys
-#from sys import argv
 import argparse
 from ImageRW import UploadNumpy
-from ImageRW import mode_Upload
 from picamera import PiCamera
 from picamera.array import PiRGBArray
 
@@ -88,7 +86,6 @@ def drive(left, right):
 	else:
 		right_f = 0
 		right_b = -np.clip(right,-100,-30)
-	print(left_f, left_b, right_f, right_b)
 	time.sleep(0.00001)
 	p1A.ChangeDutyCycle(left_f)
 	p1B.ChangeDutyCycle(left_b)
@@ -148,14 +145,13 @@ def main():
 				right=0
 
 			drive(left,right)
-			print('second={}'.format(second))
+			# print('second={}'.format(second))
 			if second >0:
 				print('sleeping for {} seconds..'.format(second))
 				time.sleep(second)
 			# print('\n\n\nclient_mode={}'.format(mode))
 			if mode>6:
 				mode=0
-			# mode_Upload(mode, host, {"X-Client2Server": "123"})#tell Server to make mode=0'''
 		except ConnectionRefusedError as error:
 			print(error)
 			sleep(1)
